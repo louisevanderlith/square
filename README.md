@@ -5,4 +5,6 @@ env PROFILE=mango HOST=mango.x docker stack deploy -c docker-compose.yml mangode
 
 1. Setup docker-machine(s)
 2. /etc/hosts
-2. Stack deploy
+3. docker-compose build
+4. docker-compose push
+5. stack deploy

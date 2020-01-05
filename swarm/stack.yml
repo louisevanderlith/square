@@ -2,17 +2,39 @@ version: "3.4"
 
 services:
   proxy:
-    image: traefik:v2.0.2
-    command: --api.insecure=true --providers.docker --providers.docker.swarmMode=true
+    image: traefik:v2.0.7
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.swarmMode=true"
+      - "--providers.docker.network=overlay"
+      - "--entryPoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.challenger.acme.httpchallenge.entrypoint=web"
+      #- "--certificatesresolvers.challenger.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.challenger.acme.email=avosasoftware@gmail.com"
+      - "--certificatesresolvers.challenger.acme.storage=/letsencrypt/acme.json"
+      #- "--log.level=DEBUG"
     networks:
       - overlay
     ports:
       - "80:80"
+      - "443:443"
       - "8080:8080"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     deploy:
       replicas: 1
+      labels:
+        - "traefik.http.routers.dashboard.rule=Host(`traefik.avosa.co.za`)"
+        - "traefik.http.routers.dashboard.entrypoints=websecure"
+        - "traefik.http.routers.dashboard.tls.certresolver=challenger"
+        - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
+        - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+        - "traefik.http.routers.http-catchall.entrypoints=web"
+        - "traefik.http.routers.http-catchall.middlewares=redirect-to-https@docker"
+        - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       placement:
         constraints:
           - node.role == manager
@@ -21,7 +43,9 @@ services:
     build: ../www/
     deploy:
       labels:
-        - "traefik.http.routers.www.rule=Host(`mango.x`) || Host(`www.mango.x`)"
+        - "traefik.http.routers.www.rule=Host(`avosa.co.za`) || Host(`www.avosa.co.za`)"
+        - "traefik.http.routers.www.entrypoints=websecure"
+        - "traefik.http.routers.www.tls.certresolver=challenger"
         - "traefik.http.services.www.loadbalancer.server.port=8091"
     environment:
       - PROFILE=${PROFILE}
@@ -35,8 +59,10 @@ services:
     build: ../folio/
     deploy:
       labels:
-        - "traefik.http.routers.folio.rule=Host(`folio.mango.x`)"
+        - "traefik.http.routers.folio.rule=Host(`folio.avosa.co.za`)"
         - "traefik.http.services.folio.loadbalancer.server.port=8090"
+        - "traefik.http.routers.folio.entrypoints=websecure"
+        - "traefik.http.routers.folio.tls.certresolver=challenger"
     #ports:
     #  - "8090:8090"
     networks:
@@ -48,8 +74,10 @@ services:
     build: ../blog/
     deploy:
       labels:
-        - "traefik.http.routers.blog.rule=Host(`blog.mango.x`)"
+        - "traefik.http.routers.blog.rule=Host(`blog.avosa.co.za`)"
         - "traefik.http.services.blog.loadbalancer.server.port=8102"
+        - "traefik.http.routers.blog.entrypoints=websecure"
+        - "traefik.http.routers.blog.tls.certresolver=challenger"
     #ports:
     #  - "8102:8102"
     networks:
@@ -61,7 +89,9 @@ services:
     build: ../theme/
     deploy:
       labels:
-        - "traefik.http.routers.theme.rule=Host(`theme.mango.x`)"
+        - "traefik.http.routers.theme.rule=Host(`theme.avosa.co.za`)"
+        - "traefik.http.routers.theme.entrypoints=websecure"
+        - "traefik.http.routers.theme.tls.certresolver=challenger"
         - "traefik.http.services.theme.loadbalancer.server.port=8093"
     #ports:
     #  - "8093:8093"
@@ -74,8 +104,11 @@ services:
     build: ../oauth2/
     deploy:
       labels:
-        - "traefik.http.routers.oauth2.rule=Host(`oauth2.mango.x`)"
+        - "traefik.http.routers.oauth2.rule=Host(`oauth2.avosa.co.za`)"
         - "traefik.http.services.oauth2.loadbalancer.server.port=8086"
+        - "traefik.http.routers.oauth2.tls=true"
+        - "traefik.http.routers.oauth2.entrypoints=websecure"
+        - "traefik.http.routers.oauth2.tls.certresolver=challenger"
     #ports:
     #  - "8086:8086"
     networks:
@@ -85,6 +118,12 @@ services:
 
 volumes:
   dbstore:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /var/db
+  letsencrypt:
 
 networks:
   overlay:
