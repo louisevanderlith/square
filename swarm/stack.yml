@@ -1,0 +1,90 @@
+version: "3.4"
+
+services:
+  proxy:
+    image: traefik:v2.0.2
+    command: --api.insecure=true --providers.docker --providers.docker.swarmMode=true
+    networks:
+      - overlay
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+  www:
+    image: avosa/www:dev
+    build: ../www/
+    deploy:
+      labels:
+        - "traefik.http.routers.www.rule=Host(`mango.x`) || Host(`www.mango.x`)"
+        - "traefik.http.services.www.loadbalancer.server.port=8091"
+    environment:
+      - PROFILE=${PROFILE}
+      - HOST=${HOST}
+    #ports:
+    #  - "8091:8091"
+    networks:
+      - overlay
+  folio:
+    image: avosa/folio:dev
+    build: ../folio/
+    deploy:
+      labels:
+        - "traefik.http.routers.folio.rule=Host(`folio.mango.x`)"
+        - "traefik.http.services.folio.loadbalancer.server.port=8090"
+    #ports:
+    #  - "8090:8090"
+    networks:
+      - overlay
+    volumes:
+      - dbstore:/db
+  blog:
+    image: avosa/blog:dev
+    build: ../blog/
+    deploy:
+      labels:
+        - "traefik.http.routers.blog.rule=Host(`blog.mango.x`)"
+        - "traefik.http.services.blog.loadbalancer.server.port=8102"
+    #ports:
+    #  - "8102:8102"
+    networks:
+      - overlay
+    volumes:
+      - dbstore:/db
+  theme:
+    image: avosa/theme:dev
+    build: ../theme/
+    deploy:
+      labels:
+        - "traefik.http.routers.theme.rule=Host(`theme.mango.x`)"
+        - "traefik.http.services.theme.loadbalancer.server.port=8093"
+    #ports:
+    #  - "8093:8093"
+    networks:
+      - overlay
+    volumes:
+      - dbstore:/db
+  oauth2:
+    image: avosa/oauth2:dev
+    build: ../oauth2/
+    deploy:
+      labels:
+        - "traefik.http.routers.oauth2.rule=Host(`oauth2.mango.x`)"
+        - "traefik.http.services.oauth2.loadbalancer.server.port=8086"
+    #ports:
+    #  - "8086:8086"
+    networks:
+      - overlay
+    volumes:
+      - dbstore:/db
+
+volumes:
+  dbstore:
+
+networks:
+  overlay:

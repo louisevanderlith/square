@@ -1,0 +1,27 @@
+{
+  "projects": {
+    "www": "git@github.com:louisevanderlith/www.git",
+    "secure": "git@github.com:louisevanderlith/secure.git",
+    "folio": "git@github.com:louisevanderlith/folio.git",
+    "oauth2": "git@github.com:louisevanderlith/oauth2.git",
+    "blog": "git@github.com:louisevanderlith/blog.git",
+    "theme": "git@github.com:louisevanderlith/theme.git",
+    "admin": "git@github.com:louisevanderlith/admin.git",
+    "artifact": "git@github.com:louisevanderlith/artifact.git",
+    "cars": "git@github.com:louisevanderlith/cars.git",
+    "comment": "git@github.com:louisevanderlith/comment.git",
+    "comms": "git@github.com:louisevanderlith/comms.git",
+    "entity": "git@github.com:louisevanderlith/entity.git",
+    "funds": "git@github.com:louisevanderlith/funds.git",
+    "game": "git@github.com:louisevanderlith/game.git",
+    "logbook": "git@github.com:louisevanderlith/logbook.git",
+    "notify": "git@github.com:louisevanderlith/notify.git",
+    "quote": "git@github.com:louisevanderlith/quote.git",
+    "service": "git@github.com:louisevanderlith/service.git",
+    "shop": "git@github.com:louisevanderlith/shop.git",
+    "stock": "git@github.com:louisevanderlith/stock.git",
+    "vehicle": "git@github.com:louisevanderlith/vehicle.git",
+    "vin": "git@github.com:louisevanderlith/vin.git",
+    "xchange": "git@github.com:louisevanderlith/xchange.git"
+  }
+}
