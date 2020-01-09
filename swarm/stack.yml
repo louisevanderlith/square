@@ -7,14 +7,14 @@ services:
       - "--api.dashboard=true"
       - "--providers.docker=true"
       - "--providers.docker.swarmMode=true"
-      - "--providers.docker.network=overlay"
+      - "--providers.docker.network=avosa_overlay"
       - "--entryPoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.challenger.acme.httpchallenge.entrypoint=web"
       #- "--certificatesresolvers.challenger.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--certificatesresolvers.challenger.acme.email=avosasoftware@gmail.com"
       - "--certificatesresolvers.challenger.acme.storage=/letsencrypt/acme.json"
-      #- "--log.level=DEBUG"
+      - "--log.level=DEBUG"
     networks:
       - overlay
     ports:
@@ -27,10 +27,10 @@ services:
     deploy:
       replicas: 1
       labels:
-        - "traefik.http.routers.dashboard.rule=Host(`traefik.avosa.co.za`)"
-        - "traefik.http.routers.dashboard.entrypoints=websecure"
-        - "traefik.http.routers.dashboard.tls.certresolver=challenger"
-        - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
+        - "traefik.http.routers.api.rule=Host(`traefik.avosa.co.za`)"
+        - "traefik.http.routers.api.service=api@internal"
+        - "traefik.http.services.api.loadbalancer.server.port=1337"
+        - "traefik.http.routers.api.entrypoints=websecure"
         - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
         - "traefik.http.routers.http-catchall.entrypoints=web"
         - "traefik.http.routers.http-catchall.middlewares=redirect-to-https@docker"
@@ -106,7 +106,6 @@ services:
       labels:
         - "traefik.http.routers.oauth2.rule=Host(`oauth2.avosa.co.za`)"
         - "traefik.http.services.oauth2.loadbalancer.server.port=8086"
-        - "traefik.http.routers.oauth2.tls=true"
         - "traefik.http.routers.oauth2.entrypoints=websecure"
         - "traefik.http.routers.oauth2.tls.certresolver=challenger"
     #ports:
