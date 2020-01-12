@@ -1,7 +1,6 @@
 {
   "projects": {
     "www": "git@github.com:louisevanderlith/www.git",
-    "secure": "git@github.com:louisevanderlith/secure.git",
     "folio": "git@github.com:louisevanderlith/folio.git",
     "oauth2": "git@github.com:louisevanderlith/oauth2.git",
     "blog": "git@github.com:louisevanderlith/blog.git",
