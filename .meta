@@ -21,6 +21,7 @@
     "stock": "git@github.com:louisevanderlith/stock.git",
     "vehicle": "git@github.com:louisevanderlith/vehicle.git",
     "vin": "git@github.com:louisevanderlith/vin.git",
-    "xchange": "git@github.com:louisevanderlith/xchange.git"
+    "xchange": "git@github.com:louisevanderlith/xchange.git",
+    "droxo": "git@github.com:louisevanderlith/droxo.git"
   }
 }
