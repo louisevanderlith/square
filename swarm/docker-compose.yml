@@ -10,7 +10,7 @@ services:
       - "--entryPoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.challenger.acme.httpchallenge.entrypoint=web"
-      # "--certificatesresolvers.challenger.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.challenger.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--certificatesresolvers.challenger.acme.email=avosasoftware@gmail.com"
       - "--certificatesresolvers.challenger.acme.storage=/letsencrypt/acme.json"
       - "--certificatesResolvers.challenger.acme.tlsChallenge"
